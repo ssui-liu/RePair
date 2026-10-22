@@ -1,0 +1,52 @@
+cff-version: 1.2.0
+message: "If you use RePair, please cite the paper."
+title: "RePair: Turning Retrieval Failures into Counterfactual Hard Pairs"
+type: software
+authors:
+  - family-names: Liu
+    given-names: Siyi
+  - family-names: Zhu
+    given-names: Xiaorong
+  - family-names: Du
+    given-names: Enjun
+  - family-names: Zuo
+    given-names: Xinyu
+  - family-names: Duan
+    given-names: Lisheng
+  - family-names: Liang
+    given-names: Haijin
+  - family-names: Ma
+    given-names: Jin
+  - family-names: Pu
+    given-names: Junfu
+  - family-names: Zhang
+    given-names: Yongqi
+repository-code: "https://github.com/ssui-liu/RePair"
+license: MIT
+preferred-citation:
+  type: conference-paper
+  title: "RePair: Turning Retrieval Failures into Counterfactual Hard Pairs"
+  authors:
+    - family-names: Liu
+      given-names: Siyi
+    - family-names: Zhu
+      given-names: Xiaorong
+    - family-names: Du
+      given-names: Enjun
+    - family-names: Zuo
+      given-names: Xinyu
+    - family-names: Duan
+      given-names: Lisheng
+    - family-names: Liang
+      given-names: Haijin
+    - family-names: Ma
+      given-names: Jin
+    - family-names: Pu
+      given-names: Junfu
+    - family-names: Zhang
+      given-names: Yongqi
+  collection-title: "Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing"
+  conference:
+    name: "EMNLP 2026"
+  year: 2026
+  url: "https://arxiv.org/abs/2608.29604"

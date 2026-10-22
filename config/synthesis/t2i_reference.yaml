@@ -1,0 +1,27 @@
+# RePair T2I synthesis: paper reference settings (Algorithm 1, image side).
+# Documentation only; this release has no Flux T2I runner. Import externally
+# verified and selected edits with scripts/prepare_t2i.py.
+dataset:
+  key: flickr30k
+  split: train
+mining:
+  mining_top_k: 100                   # paper K_mine
+  fps_per_query: 1                    # paper d_T2I
+quality_control:
+  model: gemini-2.5-flash
+  enable_gt_check: true
+  enable_fp_check: true
+instruction:
+  model: gemini-2.5-flash
+  inputs: [query_text, false_positive_image]
+image_editor:
+  model: flux2-9b
+  num_inference_steps: 8
+  height: 512
+  width: 512
+selection:
+  num_candidates: 3                   # paper M
+  criterion: maximum_clip_cosine_to_original_fp
+output:
+  parquet_directory: data_cache/RePair/flickr30k/T2I
+  columns: [query_sentid, fp_imgid, gt_imgid, edited_image]

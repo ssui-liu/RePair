@@ -1,0 +1,54 @@
+# RePair I2T synthesis, paper recipe (Algorithm 1, caption side).
+# d_I2T=5 FP captions per query from a K_mine=100 FP pool, joint QC, M=3 edits, cosine PQC.
+#
+#   python scripts/synthesize_i2t.py --config config/synthesis/i2t.yaml --dry-run
+#
+# Output layout and work-item IDs: config/synthesis/OUTPUT_LAYOUT.md.
+
+api:                                  # any OpenAI-compatible chat-completions endpoint
+  vision_model: "gemini-2.5-flash"    # QC and edit instructions (image input)
+  text_model: "gemini-2.5-flash"      # caption edits
+  api_key: null                       # leave null: read from GEMINI_API_KEY (or OPENAI_API_KEY)
+  base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+  temperature: 0.2
+  timeout_seconds: 120.0
+  max_tokens: 10240
+
+synthesis:
+  max_queries: 30000                  # queries processed, worst GT rank first
+  fps_per_query: 5                    # paper d_I2T (5); FPs taken from the head of each pool
+  fp_top_pct: null                    # alternative: ceil(pool * pct) FPs per query
+  gt_caption_mode: "first"            # GT caption(s) shown to QC: first (best ranked) | last | all
+  num_candidates: 3                   # paper M (3): edits per pair, reduced to one by PQC
+  max_pairs: null                     # global cap on work items
+  resume: true                        # skip items that already have an output directory
+  resume_processed_statuses: ["success", "qc_rejected"]  # re-run failed items when resuming
+  save_query_images: false            # also save the query image of successful items
+
+quality_control:
+  enable_qc: true
+  enable_gt_check: true               # criterion 1: the GT caption matches the query image
+  enable_fp_check: true               # criterion 2: the FP caption is not already a valid description
+  enable_pqc: true                    # cosine minimal-change selection among the M edits (paper PQC)
+
+parallel:
+  enable: true                        # thread pool; mind the API rate limits
+  max_workers: 10
+
+retry:                                # the only retry layer of API calls (transient errors only)
+  max_retries: 3
+  initial_delay: 2.0
+  backoff_factor: 2.0
+  max_delay: 60.0
+
+paths:
+  results_dir: "results"              # reads <results>/<dataset>/<retriever>/retrieval/<split>/i2t_fp_pool.json
+  retriever: "vit-base-patch32"       # retriever directory that produced the FP pool
+
+dataset:
+  key: "flickr30k"                    # flickr30k | coco30k
+  split: "train"
+  cache_dir: "data_cache"
+
+logging:
+  show_progress: true

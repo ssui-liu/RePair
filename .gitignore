@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Data, outputs and checkpoints
+data_cache/
+results/
+checkpoints/
+wandb/
+dist/
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# Logs and temporary files
+*.log
+*.tmp
+.DS_Store
+
+# Secrets and local overrides
+.env
+.env.*
+*.local.yaml
+*.local.yml

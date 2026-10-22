@@ -1,0 +1,36 @@
+# Full-ranking retrieval (both directions) and FP-pool export for synthesis.
+#
+#   python scripts/retrieve.py --split test                   # metrics
+#   python scripts/retrieve.py --split train --save-fp-pools  # + {i2t,t2i}_fp_pool.json
+#
+# Reads the local cache written by scripts/prepare_dataset.py:
+#   <cache_dir>/<key>/dataset_<key>.json, <cache_dir>/<key>/<split>/images_parquet/
+
+model:
+  model_name: "openai/clip-vit-base-patch32"
+  processor_name: null   # null = processor saved with the model; set it for checkpoints without one
+  device: null           # null = cuda when available
+  batch_size: 64         # encoding batch size
+
+dataset:
+  key: "flickr30k"       # flickr30k | coco30k
+  split: "test"          # overridden by --split
+  cache_dir: "data_cache"
+
+evaluation:
+  metrics: ["recall", "mean_rank", "median_rank", "mrr", "ndcg", "map"]
+  top_k: [1, 5, 10]
+  eval_tasks: ["t2i", "i2t"]
+
+  save_results: true
+  results_path: null     # null = <output dir>/evaluation_results.json
+  output_dir: null       # null = <checkpoint>/../retrieval/<split> or results/<key>/<model>/retrieval/<split>
+
+  # FP pools {i2t,t2i}_fp_pool.json: top-K_mine non-GT candidates per query (paper Eq. 1).
+  save_fp_pools: false
+  mining_top_k: 100      # paper K_mine
+
+  # Debug output: the worst-ranked T2I queries with images.
+  save_tail: false
+  tail_k: 10
+  tail_output_dir: null  # null = <output dir>/tail_t2i

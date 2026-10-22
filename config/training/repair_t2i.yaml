@@ -1,0 +1,59 @@
+# RePair-T2I: image-side hard pairs only.
+#
+#   python scripts/train.py --config config/training/repair_t2i.yaml \
+#     --seed 42 --output-dir checkpoints/repair-t2i-seed42
+#
+# Hard-pair records:
+#   repair-t2i: <cache_dir>/RePair/<dataset>/T2I/part-*.parquet
+#               FP image's anchor -> hard pair (edited image, query caption)
+#
+# Global InfoNCE uses the original anchors only; hard pairs enter local grids.
+# Hyperparameters lie within the paper's search ranges (Appendix D).
+
+model:
+  model_name: "openai/clip-vit-base-patch32"
+  device: null                       # null = cuda when available
+
+dataset:
+  key: "flickr30k"                   # flickr30k | coco30k
+  cache_dir: "data_cache"
+
+training:
+  train_split: "train"
+  eval_split: "val"
+  output_dir: "checkpoints/repair-t2i"
+  num_train_epochs: 10
+  per_device_train_batch_size: 64    # anchors per microbatch = InfoNCE candidate set
+  gradient_accumulation_steps: 4     # each update averages 4 microbatches (256 anchors)
+  per_device_eval_batch_size: 256    # encoding batch of validation retrieval
+  dataloader_num_workers: 4          # processes that load images and build grids
+  learning_rate: 2.0e-6
+  weight_decay: 0.1
+  warmup_ratio: 0.1
+  lr_scheduler_type: "cosine"
+  fp16: true
+  logging_steps: 50
+  save_steps: 500
+  eval_steps: 500
+  save_total_limit: 3
+  eval_metrics: ["recall", "mrr"]
+  eval_top_k: [1, 5, 10]
+  eval_tasks: ["t2i", "i2t"]
+
+loss:
+  grid_lambda: 0.5                   # paper lambda (Eq. 6)
+
+hard_pairs:
+  enabled: ["repair-t2i"]
+  paths: {}                         # optional per-type records path; default: cache paths above
+
+sampling:
+  pairs_per_direction: 1             # hard pairs per direction and anchor -> 3x3 grids
+
+wandb:
+  enable: false
+  project: "auto"                    # auto = RePair-<dataset>
+  run_name: null
+  strategy_tag: "repair-t2i"
+  tags: ["repair", "t2i"]
+  notes: "RePair (repair-t2i), lambda=0.5."

@@ -1,0 +1,14 @@
+# Python 3.11. Install the PyTorch build for your CPU/CUDA environment first.
+# Pin the Trainer/dataset/API interfaces exercised by the offline test suite.
+torch>=2.2,<3
+transformers==4.48.3  # >=4.48: averages gradient-accumulation microbatches for custom losses
+datasets==3.1.0
+accelerate==1.1.1
+openai==1.59.9
+pydantic==2.10.6
+PyYAML>=6.0,<7
+pyarrow==18.1.0
+numpy>=1.26,<3
+tqdm>=4.66,<5
+Pillow>=10.0,<13
+wandb==0.19.1
